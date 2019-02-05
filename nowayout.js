@@ -491,11 +491,11 @@ var Game = (function() {
     }
 
     function _movePlayer() {
-        if (_leftPressed && _player.x >= _player.w) {
+        if (_leftPressed && _player.x > 0) {
             _player.move.dx = -3;
 
         } else if (_rightPressed &&
-                   _player.x + _player.w <= _player.move.canvas.width - _player.w) {
+                   _player.x + _player.w < _player.move.canvas.width ) {
 
             _player.move.dx = 3;
         } else {
@@ -504,11 +504,11 @@ var Game = (function() {
         }
 
         if (_upPressed &&
-            _player.y >= _player.h) {
+            _player.y > 0) {
             _player.move.dy = -3;
 
         } else if (_downPressed &&
-                   _player.y + _player.h <= _player.move.canvas.height - _player.h) {
+                   _player.y + _player.h < _player.move.canvas.height) {
             _player.move.dy = 3;
 
         } else {
@@ -589,7 +589,7 @@ var Game = (function() {
 
             _checkCollisions();
             _time += 1;
-            if ((_time / 32 ) % 16 === 0) {
+            if ((_time / 32 ) % 8 === 0) {
                 _balls.push(new _ballFactory("red"));
             }
 
