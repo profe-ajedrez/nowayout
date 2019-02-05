@@ -11,19 +11,22 @@
                 url('./assets/fonts/D-Day-Stencil.ttf.svg#D-Day-Stencil') format('svg'),
                 url('./assets/fonts/D-Day-Stencil.ttf.eot'),
                 url('./assets/fonts/D-Day-Stencil.ttf.eot?#iefix') format('embedded-opentype'); 
-            font-weight: normal;
-            font-style: normal;
+            font-weight : normal;
+            font-style  : normal;
         }
+
         body {
-            background:#2c3e50;
+            background :#2c3e50;
         }
+
         #container{
-            width     :512px;
-            margin    :auto;
-            padding:16px;
-            border:2px solid #cccccc;
-            border-radius:8px;
+            width     : 512px;
+            margin    : auto;
+            padding   : 16px;
+            border    : 2px solid #cccccc;
+            border-radius : 8px;
         }
+
         #centrador{
             width:100%;
             margin:auto;
@@ -33,43 +36,50 @@
         .mono{
             font-family:'Courier New', Courier, monospace;
         }
+
         .rem15{
             font-size:1.2rem;
         }
+        
         .text-white{
             color:antiquewhite;
         }
 
         #canvas-container{
-            background:#ffffff;
-            margin-top:0.5rem;
+            background : #ffffff;
+            margin-top : 0.5rem;
         }
 
         .auto{
-            margin: auto;
+            margin : auto;
         }
 
         .w90{
-            width:90%;
+            width : 90%;
         }
 
         #creditos{
-            margi-top:0.5rem;
+            margin-top : 0.5rem;
         }
 
         a{
-            text-decoration:none;
+            text-decoration : none;
         }
         .dday{
-            font-family: 'D-Day-Stencil';
-
-            font-size:4rem;
-            background-color: #ffffff;
-            color: transparent;
-
-            -webkit-background-clip: text;
-            -moz-background-clip: text;
-            background-clip: text;
+            font-family     : 'D-Day-Stencil';
+            font-size       : 2rem;
+            color           : #ecf0f1;
+        }
+        h1.title{
+            font-size : 3rem;
+            font-family     : 'D-Day-Stencil';
+            font-size       : 2rem;
+            color           : #ecf0f1;
+            padding   : 5px;
+            margin    : 2px;
+        }
+        .minor{
+            font-size : 1rem;
         }
 
     </style>
@@ -79,25 +89,26 @@
         <div id="centrador">
             <div id="info">
                 <div id="instrucciones" class="text-white  mono">
-                    <p class="text-white  mono">No puedes ganar este juego. En este juego moriras.</p>
-                    <p class="text-white  mono">La pregunta es que tan rápido</p>
-                    <p class="text-white  mono">
+                    <h1 class="title">No Way Out <span class="minor">del infierno celular.</span></h1>
+                    <p  class="text-white mono">No puedes ganar este juego. En este juego moriras.</p>
+                    <p  class="text-white mono">La pregunta es que tan rápido</p>
+                    <p  class="text-white mono">
                         Eres un <strong class="rem15">puto</strong> microorganismo cuadricelular, perdido en medio de un ambiente hostil,
                         colonizado por una agresiva sociedad de bacterias circulares.
                     </p>
-                    <p class="text-white  mono">Intenta sobrevivir lo más posible sin ser convertido en cadenas proteicas de ácido desoxirribonucleico</p>
+                    <p class="text-white  mono">Intenta sobrevivir lo más posible sin ser convertido en cadenas proteicas de ácido desoxirribonucleico que serán devoradas por los circulofagócitos</p>
                 </div>
                 <div id="ui" class="auto w90">
-                    <span id="vidas" class="text-white rem15 mono auto">5</span>
+                    <span id="vidas"  class="text-white rem15 mono auto">5</span>
                     <span id="tiempo" class="text-white rem15 mono auto">0</span>
-                    <span id="bolas" class="text-white rem15 mono auto">1</span>
+                    <span id="bolas"  class="text-white rem15 mono auto">1</span>
             </div>
             </div>
             <div id="canvas-container">
 
             </div>
             <div id="creditos">
-                <a href="http:jacobopus.github.io"><span class="dday">(c)One Coder Army</span></a>
+                <a href="http:jacobopus.github.io"><span class="dday">(c)The One Oldman Army</span></a>
             </div>
         </div>
     </div>
