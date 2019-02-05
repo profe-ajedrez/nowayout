@@ -48,13 +48,24 @@ MovingBehaviour.prototype.move = function() {
     this.sprite.y += this.dy;
 };
 
+MovingBehaviour.prototype.isCollisioning = function (sprite) {
+
+    if (sprite.type == 'rectangle') {
+	    return (this.sprite.x < sprite.x + sprite.w &&
+		        this.sprite.x + this.sprite.w > sprite.x &&
+		        this.sprite.y < sprite.y + sprite.h &&
+		        this.sprite.h + this.sprite.y > sprite.y);
+    }
+};
+
+
 /**
  * BounceBehaviour
  * Extiende a MovingBehaviour
  *
  * Implementa el comportamiento movimiento rebotar
- * @param {*} sprite 
- * @param {*} canvas 
+ * @param {*} sprite
+ * @param {*} canvas
  */
 var BounceBehaviour = function(sprite, canvas) {
     MovingBehaviour.call(this, sprite, canvas);
@@ -159,7 +170,7 @@ Sprite.prototype.onCollision      = function (sprite) {};
 /**
  * Esta clase permite crear objetos circulares
  * (Las pelotitas del juego)
- * 
+ *
  */
 var CircleSprite = function(color, context, canvas) {
     Sprite.call(this, color, context);
@@ -306,6 +317,8 @@ var Player = function(context, canvas) {
     this.move.dy = 3;
     this.x = canvas.width/2 - this.w/2;
     this.y = canvas.height - (this.h*2);
+    this.lastX = this.x;
+    this.lastY = this.y;
     this.lives = 5;
 };
 
@@ -321,21 +334,28 @@ RedBall.prototype.constructor = RedBall;
 
 var Game = (function() {
     var _time = 0;
-    var _parent = document.getElementById("container");
+    var _parent = document.getElementById("canvas-container");
     var _settings = {
         maxPlatforms  : 12,
         height        : 256,
-        width         : 256,
+        width         : 512,
         platformHeight: 8,
-        platformWidth : 24,
-        colorPlatform : "#34495e",
-        maxJump       : 112
+        platformWidth : 8,
+        colorPlatform : "#9b59b6",
+        maxJump       : 112,
+        defaultPlan   : "4x56x96/4x65x69/4xxxx2xx3xx7x5x2/8xx4xx4xx5xx3/8888/4x56x96/" +
+                        "4xxx3xxx2xx7x8/5xxx2xxxx2x7x5x2/8xx4xx4xx5xx3/8x788/8xx688/8xxx588/" +
+                        "4xx1x2xxx1xx5x6xx2/4xx2xx4xx4xx5xx3/8888/4x56x96/4x56x96/"+
+                        "4x56x96/8888/8885xxx/888xxx5/87x86xx4xx2/8888/8882xxx3/" +
+                        "8888/8888/8888/8xx4xx4xx5xx3/5xxx2xxxx2x7x5x2/4xxx3xxx2xx7x8/" +
+                        "8xx4xx4xx5xx3/8888/4x56x96/4xxxx2xx3xx7x5x2/4x56x96/4x65x69/"
+
      },
         _canvas  = document.createElement("canvas"),
         _context = _canvas.getContext("2d"),
         _uiVidas = document.getElementById("vidas"),
-        _uiBalls = document.getElementById("balls"),
-        _uiTime  = document.getElementById("time"),
+        _uiBalls = document.getElementById("bolas"),
+        _uiTime  = document.getElementById("tiempo"),
 
         _platforms = [],
         _balls     = [],
@@ -394,30 +414,37 @@ var Game = (function() {
         }
     }
 
-    function _generatePlatforms() {
-        for (var i = 0; i < _settings.maxPlatforms; i += 1) {
-            var p = new RectSprite(_settings.colorPlatform, _context);
-            p.x = getRandomInt(5, _canvas.width - _settings.platformWidth);
-            p.y = getRandomInt((_canvas.height - _settings.platformHeight) / 4,
-                               (_canvas.height - _settings.platformHeight) / 4 * 3);
-            p.w = _settings.platformWidth;
-            p.h = _settings.platformHeight;
-            p.color = _settings.colorPlatform;
+    function _generatePlatforms(plan) {
 
-            _platforms.push(p);
-        }
+        plan.split("/").forEach(function(fila, indexOfFila){
+            var x = 0;
+            fila.split("").forEach(function(casilla){
+                var xx = casilla * 1;
+                if (!isNaN(xx)) {
+                    x += xx * 16;
+                } else {
+                    var p = new RectSprite(_settings.colorPlatform, _context);
+                    p.x = x;
+                    p.y = indexOfFila * 8;
+                    p.w = _settings.platformWidth;
+                    p.h = _settings.platformHeight;
+                    p.color = _settings.colorPlatform;
+                    _platforms.push(p);
+                }
+            });
+        });
     }
 
-    function _generateBorder() {
-        _border.h = _settings.height;
-        _border.w = _settings.width;
-    }
+    //function _generateBorder() {
+    //    _border.h = _settings.height;
+    //    _border.w = _settings.width;
+    //}
 
     function _drawPlatforms() {
         _platforms.forEach( function(platform){
             platform.draw();
         });
-        _border.draw();
+       // _border.draw();
     }
 
     function _drawBalls(context) {
@@ -479,6 +506,8 @@ var Game = (function() {
             _player.move.dy = 0;
         }
 
+        _player.lastX = _player.x;
+        _player.lastY = _player.y;
         _player.x += _player.move.dx;
         _player.y += _player.move.dy;
     }
@@ -488,11 +517,11 @@ var Game = (function() {
         document.addEventListener("keyup",   _keyUpHandler, false);
 
         _player.move.move =  _movePlayer;
-        _canvas.height = _settings.height;
-        _canvas.width  = _settings.width;
+        _canvas.height    = _settings.height;
+        _canvas.width     = _settings.width;
         _parent.appendChild(_canvas);
-        _generateBorder();
-        _generatePlatforms();
+       // _generateBorder();
+        _generatePlatforms(_settings.defaultPlan);
         _balls.push(new _ballFactory("red"));
         _drawPlatforms();
         _drawBalls();
@@ -509,9 +538,9 @@ var Game = (function() {
     }
 
     function _updateUi(timeStamp, start) {
-        _uiBalls.innerHTML = _balls.length;
-        _uiVidas.innerHTML = _player.lives;
-        _uiTime.innerHTML  = Math.floor(timeStamp/1000);
+        _uiBalls.innerHTML = _balls.length + " bacterias";
+        _uiVidas.innerHTML = _player.lives + " proteinas |" ;
+        _uiTime.innerHTML  = Math.floor(timeStamp/1000) + " segundos |";
     }
 
     function _checkCollisions() {
@@ -526,6 +555,13 @@ var Game = (function() {
                 _player.lives -= 1;
                 ball.move.bounce(whereWasTheCollision);
             }
+        });
+
+        _platforms.forEach(function(platform) {
+		    if (_player.move.isCollisioning(platform)) {
+			    _player.x = _player.lastX;
+			    _player.y = _player.lastY;
+			}
         });
     }
 
