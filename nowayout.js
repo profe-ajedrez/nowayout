@@ -85,7 +85,6 @@ BounceBehaviour.prototype.checkBorderCollision = function() {
         this.dy = -this.dy;
         return;
     }
-
 };
 
 /**
@@ -122,33 +121,35 @@ BounceBehaviour.prototype.checkRectSpriteCollision = function (rectangle) {
  * Implementa el rebote.
  */
 BounceBehaviour.prototype.bounce = function (direction) {
+    xAxis = (this.xAxis === undefined ? true : this.xAxis);
+    yAxis = (this.yAxis === undefined ? true : this.yAxis);
     var bounces = [
         function(ball){
         },
         function(ball){
-            ball.move.dy *= -1;
-        },
-        function(ball){
-            ball.move.dx *= -1;
-        },
-        function(ball){
-            if (getRandomInt(1,4) === 1){
-                ball.move.dx *= -1;
-            }
-            ball.move.dy *= -1;
-        }
 
+            ball.move.dy *= (yAxis ? -1 : 1);
+        },
+        function(ball){
+            ball.move.dx *= (xAxis ? -1 : 1);
+        },
+        function(ball){
+            if (getRandomInt(1, 4) === 1){
+                ball.move.dx *= (xAxis ? -1 : 1);
+            }
+            ball.move.dy *= (yAxis ? -1 : 1);
+        }
     ];
-        bounces[direction](this.sprite);
+    bounces[direction](this.sprite);
 };
 
 BounceBehaviour.prototype.constructor = BounceBehaviour;
 
 /**
  * Este objeto es el padre de todo lo que se verá en la pantalla.
- * 
- * @param {*} color 
- * @param {*} context 
+ *
+ * @param {*} color
+ * @param {*} context
  */
 var Sprite = function(color, context) {
     this.x = 0;
@@ -181,6 +182,8 @@ var CircleSprite = function(color, context, canvas) {
     this.move = new BounceBehaviour(this, canvas);
     this.move.dx = 1;
     this.move.dy = 1;
+    this.xAxis   = true;
+    this.yAxis   = true;
 };
 
 CircleSprite.prototype = Object.create(Sprite.prototype);
@@ -301,14 +304,12 @@ var Border = function(color, context) {
     this.y = 0;
 };
 
-
 Border.prototype.draw = function() {
     this.context.beginPath();
     this.context.lineWidth = "1";
     this.context.strokeStyle = this.color;
     this.context.strokeRect(this.x, this.y, this.w, this.h);
 };
-
 
 var Player = function(context, canvas) {
     RectSprite.call(this, "#3498db", context);
@@ -329,10 +330,56 @@ Player.prototype.constructor = Player;
 
 var RedBall = function (context, canvas) {
     CircleSprite.call(this, "#c0392b", context, canvas);
+    this.subType = "redball";
+
+    this.y   = (getRandomInt(1,2) == 1 ?
+    getRandomInt(this.r+2, canvas.height - this.r - 2) : this.y);
+
+    this.yAxis = true;
+    this.xAxis = true;
+
+    if (getRandomInt(1,2) == 1 ) {
+        this.x = canvas.width - this.r *2;
+        this.move.dx = -2;
+    } else {
+        this.x = this.r;
+        this.move.dx = 2;
+    }
+    if (getRandomInt(1,2) == 1 ) {
+        this.y = canvas.height - this.r *2;
+        this.move.dy = -2;
+    } else {
+        this.y = this.r;
+        this.move.dy = 2;
+    }
 };
 
 RedBall.prototype = Object.create(CircleSprite.prototype);
 RedBall.prototype.constructor = RedBall;
+
+var GreenBall = function(context, canvas) {
+    CircleSprite.call(this, "#1abc9c", context, canvas);
+    this.subType = "greenball";
+    this.r = 3;
+    if (getRandomInt(1,2) == 1) {
+        this.y       = this.r;
+        this.x       = getRandomInt(this.r, canvas.width - this.r);
+        this.move.dy = 1;
+        this.move.dx = 0;
+        this.yAxis   = true;
+        this.xAxis   = false;
+    } else {
+        this.x       = this.r;
+        this.y       = getRandomInt(this.r, canvas.height - this.r);
+        this.move.dx = 1;
+        this.move.dy = 0;
+        this.yAxis   = false;
+        this.xAxis   = true;
+    }
+}
+
+GreenBall.prototype = Object.create(CircleSprite.prototype);
+GreenBall.prototype.constructor = GreenBall;
 
 var Game = (function() {
     var _time = 0;
@@ -349,7 +396,7 @@ var Game = (function() {
              * Basado en la notación Fehn del ajedrez.
              * El plan del escenario es un string conteniendo caracteres separados por /
              * cada segmento separado por / representa una fila en la grilla de la escena.
-             * donde los números representan un espacio vacio, y las x representan un espacio 
+             * donde los números representan un espacio vacio, y las x representan un espacio
              * a pintar, para ser ocupado por una plataforma.
              * tener en cuenta que, para efectos de diseñar escenas, la grilla es de 32x32.
              */
@@ -462,32 +509,25 @@ var Game = (function() {
         });
     }
 
-    function _ballFactory(which){
-        var ball;
-        switch (which) {
-            case "red":
-                ball   = new RedBall(_context, _canvas);
-                ball.y = (getRandomInt(1,2) == 1 ? getRandomInt(ball.r+2, _canvas.height-ball.r-2): ball.y);
-                break;
-            default:
-                break;
+    function _ballFactory(){
+        var balls = {
+           "red"       : function(){
+               var red = new RedBall(_context, _canvas);
+               return red;
+           },
+
+           "green"    : function(){
+            var green = new GreenBall(_context, _canvas);
+            return green;
+           }
+        };
+
+        //Cada 5 pelotas, generar una verde.
+        if ((_balls.length + 5) % 5 === 0) {
+            return balls.green();
         }
 
-        if (getRandomInt(1,2) == 1 ) {
-            ball.x = _settings.width - ball.r *2;
-            ball.move.dx = -2;
-        } else {
-            ball.x = ball.r;
-            ball.move.dx = 2;
-        }
-        if (getRandomInt(1,2) == 1 ) {
-            ball.y = _settings.height - ball.r *2;
-            ball.move.dy = -2;
-        } else {
-            ball.y = ball.r;
-            ball.move.dy = 2;
-        }
-        return ball;
+        return balls.red();
     }
 
     function _movePlayer() {
@@ -531,7 +571,7 @@ var Game = (function() {
         _parent.appendChild(_canvas);
        // _generateBorder();
         _generatePlatforms(_settings.defaultPlan);
-        _balls.push(new _ballFactory("red"));
+        _balls.push( _ballFactory());
         _drawPlatforms();
         _drawBalls();
     }
@@ -590,7 +630,7 @@ var Game = (function() {
             _checkCollisions();
             _time += 1;
             if ((_time / 32 ) % 8 === 0) {
-                _balls.push(new _ballFactory("red"));
+                _balls.push(_ballFactory("red"));
             }
 
             if (_player.lives <= 0) {
