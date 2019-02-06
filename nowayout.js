@@ -1,4 +1,9 @@
 //TODO Refactorizar usando ECMASCRIPT 6 class. y mandar a la chucha a IE.
+//TODO Más enemigos
+//TODO habilidades especiales para player
+//TODO Plan de Escenas generator
+//TODO Editor de escenarios
+//TODO Responsivenes or Android fork
 
 //Fucking funciÃ³n para generar un entero aleatorio dentro de un rango
 function getRandomInt(min, max) {
@@ -7,7 +12,7 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-//fucking funciÃ³n que devuelve 1 si parametro es  + y -1 si parametro es -
+//fucking función que devuelve 1 si parametro es  + y -1 si parametro es -
 function getSign(n) {
     if (n>=0) {
         return 1;
@@ -76,7 +81,7 @@ var BounceBehaviour = function(sprite, canvas) {
 BounceBehaviour.prototype = Object.create(MovingBehaviour.prototype);
 
 BounceBehaviour.prototype.checkBorderCollision = function() {
-    if (this.sprite.x + this.dx > this.canvas.width - this.sprite.r ||
+    if (this.sprite.x + this.dx > this.canvas.width - this.sprite.r  ||
         this.sprite.x + this.dx < this.sprite.r) {
         this.dx = -this.dx;
     }
@@ -283,8 +288,10 @@ RectSprite.prototype.isRightTouching = function (sprite) {
 };
 
 RectSprite.prototype.isInScreen = function () {
-    return (this.x > this.move.dx+1 && this.x + this.w < this.move.canvas.width - this.move.dx &&
-            this.y > this.move.dy+1 && this.y + this.h < this.move.canvas.height - this.move.dy);
+    return (this.x > this.move.dx+1 &&
+            this.x + this.w < this.move.canvas.width - this.move.dx &&
+            this.y > this.move.dy+1 &&
+            this.y + this.h < this.move.canvas.height - this.move.dy);
 };
 
 RectSprite.prototype.draw = function () {
@@ -333,24 +340,24 @@ var RedBall = function (context, canvas) {
     this.subType = "redball";
 
     this.y   = (getRandomInt(1,2) == 1 ?
-    getRandomInt(this.r+2, canvas.height - this.r - 2) : this.y);
+    getRandomInt(this.r + 2, canvas.height - this.r - 2) : this.y);
 
     this.yAxis = true;
     this.xAxis = true;
 
     if (getRandomInt(1,2) == 1 ) {
         this.x = canvas.width - this.r *2;
-        this.move.dx = -2;
+        this.move.dx = -1;
     } else {
         this.x = this.r;
-        this.move.dx = 2;
+        this.move.dx = 1;
     }
     if (getRandomInt(1,2) == 1 ) {
         this.y = canvas.height - this.r *2;
-        this.move.dy = -2;
+        this.move.dy = -1;
     } else {
         this.y = this.r;
-        this.move.dy = 2;
+        this.move.dy = 1;
     }
 };
 
@@ -360,7 +367,7 @@ RedBall.prototype.constructor = RedBall;
 var GreenBall = function(context, canvas) {
     CircleSprite.call(this, "#1abc9c", context, canvas);
     this.subType = "greenball";
-    this.r = 3;
+    this.r = 4;
     if (getRandomInt(1,2) == 1) {
         this.y       = this.r;
         this.x       = getRandomInt(this.r, canvas.width - this.r);
@@ -376,10 +383,35 @@ var GreenBall = function(context, canvas) {
         this.yAxis   = false;
         this.xAxis   = true;
     }
-}
+};
 
 GreenBall.prototype = Object.create(CircleSprite.prototype);
 GreenBall.prototype.constructor = GreenBall;
+
+var OrangeBall = function (context, canvas) {
+    CircleSprite.call(this, "#f39c12", context, canvas);
+    this.subType = "orangeball";
+    this.r = 3;
+    this.x = 0;
+    this.y = getRandomInt(this.r, canvas.height - this.r);
+    this.move.dx = 1;
+    this.move.dy = -1;
+    this.fixedy  = this.y;
+    this.range   = 30;
+    this.angle   = 0;
+    this.angleSpeed = 0.10;
+
+    this.move.move = function() {
+        this.sprite.x     += this.dx;
+        this.sprite.angle += this.sprite.angleSpeed;
+        this.sprite.y = this.sprite.fixedy +
+                        Math.sin(this.sprite.angle) *
+                        this.sprite.range;
+
+    };
+};
+OrangeBall.prototype = Object.create(CircleSprite.prototype);
+OrangeBall.prototype.constructor = OrangeBall;
 
 var Game = (function() {
     var _time = 0;
@@ -409,9 +441,7 @@ var Game = (function() {
          },
         _canvas  = document.createElement("canvas"),
         _context = _canvas.getContext("2d"),
-        _uiVidas = document.getElementById("vidas"),
-        _uiBalls = document.getElementById("bolas"),
-        _uiTime  = document.getElementById("tiempo"),
+        _ui      = document.getElementById("ui"),
 
         _platforms = [],
         _balls     = [],
@@ -509,6 +539,10 @@ var Game = (function() {
         });
     }
 
+    /**
+     * La factory posee la funcionalidad de "saber" dinámicamente
+     * que tipo de bacteria generar.
+     */
     function _ballFactory(){
         var balls = {
            "red"       : function(){
@@ -517,14 +551,23 @@ var Game = (function() {
            },
 
            "green"    : function(){
-            var green = new GreenBall(_context, _canvas);
-            return green;
+                var green = new GreenBall(_context, _canvas);
+                return green;
+           },
+
+           "orange"   : function() {
+                var orange = new OrangeBall(_context, _canvas);
+                return orange;
            }
         };
 
         //Cada 5 pelotas, generar una verde.
-        if ((_balls.length + 5) % 5 === 0) {
+        if ((_balls.length +5) % 5 === 0) {
             return balls.green();
+        }
+
+        if (getRandomInt(1, 4) === 2) {
+            return balls.orange();
         }
 
         return balls.red();
@@ -587,9 +630,10 @@ var Game = (function() {
     }
 
     function _updateUi(timeStamp, start) {
-        _uiBalls.innerHTML = _balls.length + " bacterias";
-        _uiVidas.innerHTML = _player.lives + " proteinas |" ;
-        _uiTime.innerHTML  = Math.floor(timeStamp/1000) + " segundos |";
+        _ui.innerHTML = "<span class='rem12 center mono text-white'>" +
+                        _player.lives + " proteinas |" +
+                        Math.floor(timeStamp/1000) + " segundos |" +
+                        _balls.length + " bacterias</span>";
     }
 
     function _checkCollisions() {
@@ -616,7 +660,6 @@ var Game = (function() {
 
     function _update(timeStamp) {
         if (_state === State.running) {
-            _start = (!_start ? timeStamp : _start);
             _updateBalls();
             _movePlayer();
             _clearCanvas();
@@ -630,7 +673,7 @@ var Game = (function() {
             _checkCollisions();
             _time += 1;
             if ((_time / 32 ) % 8 === 0) {
-                _balls.push(_ballFactory("red"));
+                _balls.push(_ballFactory());
             }
 
             if (_player.lives <= 0) {
@@ -652,7 +695,6 @@ var Game = (function() {
     return {
         init     : _init,
         gameLoop : _loop
-
     };
 })();
 
