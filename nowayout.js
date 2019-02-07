@@ -1,9 +1,17 @@
 //TODO Refactorizar usando ECMASCRIPT 6 class. y mandar a la chucha a IE.
 //TODO Más enemigos
 //TODO habilidades especiales para player
+//TODO Selector de dificultad
 //TODO Plan de Escenas generator
 //TODO Editor de escenarios
 //TODO Responsiveness or Android fork
+
+/**
+ * NoWayOut
+ * 
+ * Autor Andrés Reyes a.k.a. Oldman Jake
+ * juego de bacteria cuadrada vs bacterias redondas
+ */
 
 //Fucking funciÃ³n para generar un entero aleatorio dentro de un rango
 function getRandomInt(min, max) {
@@ -320,9 +328,11 @@ Border.prototype.draw = function() {
 
 var Player = function(context, canvas) {
     RectSprite.call(this, "#3498db", context);
+    //TODO asignar posiciones de partida aleatorias, teniendo en cuenta colisión con plataformas
     this.w = 8;
     this.h = 8;
     this.move = new MovingBehaviour(this, canvas);
+    //TODO hacer dependiente velocidad de dificultad seleccionada
     this.move.dx = 3;
     this.move.dy = 3;
     this.x = canvas.width/2 - this.w/2;
@@ -439,6 +449,7 @@ var Game = (function() {
                             "8888/8888/8888/8xx4xx4xx5xx3/5xxx2xxxx2x7x5x2/4xxx3xxx2xx7x8/" +
                             "8xx4xx4xx5xx3/8888/4x56x96/4xxxx2xx3xx7x5x2/4x56x96/4x65x69/"                 
          },
+         //TODO encapsular componentes UI
         _canvas  = document.createElement("canvas"),
         _context = _canvas.getContext("2d"),
         _ui      = document.getElementById("ui"),
@@ -447,6 +458,7 @@ var Game = (function() {
         _balls     = [],
         _border    = new Border(_settings.colorPlatform, _context),
         _player    = new Player(_context, _canvas),
+        //TODO encapsular propiedades relativas a teclado e interfaces.
         _rightPressed = false,
         _leftPressed  = false,
         _upPressed    = false,
