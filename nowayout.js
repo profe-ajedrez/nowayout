@@ -1,18 +1,18 @@
 //TODO Refactorizar usando ECMASCRIPT 6 class. y mandar a la chucha a IE.
-//TODO M�s enemigos
+//TODO Más enemigos
 //TODO habilidades especiales para player
 //TODO Plan de Escenas generator
 //TODO Editor de escenarios
-//TODO Responsivenes or Android fork
+//TODO Responsiveness or Android fork
 
-//Fucking función para generar un entero aleatorio dentro de un rango
+//Fucking funciÃ³n para generar un entero aleatorio dentro de un rango
 function getRandomInt(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-//fucking funci�n que devuelve 1 si parametro es  + y -1 si parametro es -
+//fucking función que devuelve 1 si parametro es  + y -1 si parametro es -
 function getSign(n) {
     if (n>=0) {
         return 1;
@@ -33,8 +33,8 @@ var State = (function() {
 /**
  * MovingBehaviour
  *
- * Proporciona los medios básicos para crear un patron de movimiento
- * dx y dy son los delta, es decir en cuanto se modifica la posición del objeto
+ * Proporciona los medios bÃ¡sicos para crear un patron de movimiento
+ * dx y dy son los delta, es decir en cuanto se modifica la posiciÃ³n del objeto
  * al moverlo.
  *
  * @param Sprite sprite
@@ -48,7 +48,7 @@ var MovingBehaviour = function(sprite, canvas) {
 };
 
 /**
- * El método  move simplemente agrega los delta a la posición del objeto
+ * El mÃ©todo  move simplemente agrega los delta a la posiciÃ³n del objeto
  */
 MovingBehaviour.prototype.move = function() {
     this.sprite.x += this.dx;
@@ -93,7 +93,7 @@ BounceBehaviour.prototype.checkBorderCollision = function() {
 };
 
 /**
- * Este método verifica si el objeto padre del comportamiento rebotar está
+ * Este mÃ©todo verifica si el objeto padre del comportamiento rebotar estÃ¡
  * tocando a un objeto rectangulo.
  */
 BounceBehaviour.prototype.checkRectSpriteCollision = function (rectangle) {
@@ -102,7 +102,7 @@ BounceBehaviour.prototype.checkRectSpriteCollision = function (rectangle) {
 
     if (dx > (rectangle.w/2 + this.sprite.r) ||
         dy > (rectangle.h/2 + this.sprite.r)) {
-        return 0; // no colisión
+        return 0; // no colisiÃ³n
     }
 
     if (dx <= (rectangle.w/2)) {
@@ -151,7 +151,7 @@ BounceBehaviour.prototype.bounce = function (direction) {
 BounceBehaviour.prototype.constructor = BounceBehaviour;
 
 /**
- * Este objeto es el padre de todo lo que se verá en la pantalla.
+ * Este objeto es el padre de todo lo que se verÃ¡ en la pantalla.
  *
  * @param {*} color
  * @param {*} context
@@ -392,7 +392,7 @@ var OrangeBall = function (context, canvas) {
     CircleSprite.call(this, "#f39c12", context, canvas);
     this.subType = "orangeball";
     this.r = 3;
-    this.x = 0;
+    this.x = this.r;
     this.y = getRandomInt(this.r, canvas.height - this.r);
     this.move.dx = 1;
     this.move.dy = -1;
@@ -430,14 +430,14 @@ var Game = (function() {
              * cada segmento separado por / representa una fila en la grilla de la escena.
              * donde los números representan un espacio vacio, y las x representan un espacio
              * a pintar, para ser ocupado por una plataforma.
-             * tener en cuenta que, para efectos de diseñar escenas, la grilla es de 32x32.
+             * tener en cuenta que, para efectos de diseÃ±ar escenas, la grilla es de 32x32.
              */
             defaultPlan   : "4x56x96/4x65x69/4xxxx2xx3xx7x5x2/8xx4xx4xx5xx3/8888/4x56x96/" +
                             "4xxx3xxx2xx7x8/5xxx2xxxx2x7x5x2/8xx4xx4xx5xx3/8x788/8xx688/8xxx588/" +
                             "4xx1x2xxx1xx5x6xx2/4xx2xx4xx4xx5xx3/8888/4x56x96/4x56x96/"+
                             "4x56x96/8888/8885xxx/888xxx5/87x86xx4xx2/8888/8882xxx3/" +
                             "8888/8888/8888/8xx4xx4xx5xx3/5xxx2xxxx2x7x5x2/4xxx3xxx2xx7x8/" +
-                            "8xx4xx4xx5xx3/8888/4x56x96/4xxxx2xx3xx7x5x2/4x56x96/4x65x69/"
+                            "8xx4xx4xx5xx3/8888/4x56x96/4xxxx2xx3xx7x5x2/4x56x96/4x65x69/"                 
          },
         _canvas  = document.createElement("canvas"),
         _context = _canvas.getContext("2d"),
@@ -461,13 +461,13 @@ var Game = (function() {
                 _rightPressed = true;
                 break;
             case 37:
-                _leftPressed = true;
+                _leftPressed  = true;
                 break;
             case 38:
-                _upPressed = true;
+                _upPressed    = true;
                 break;
             case 40:
-                _downPressed = true;
+                _downPressed  = true;
                 break;
             case 80:   //P    pause
                 if (_state === State.pausing) {
@@ -487,13 +487,13 @@ var Game = (function() {
                 _rightPressed = false;
                 break;
             case 37:
-                _leftPressed = false;
+                _leftPressed  = false;
                 break;
             case 38:
-                _upPressed = false;
+                _upPressed    = false;
                 break;
             case 40:
-                _downPressed = false;
+                _downPressed  = false;
                 break;
             default:
                 break;
@@ -521,10 +521,13 @@ var Game = (function() {
         });
     }
 
-    //function _generateBorder() {
-    //    _border.h = _settings.height;
-    //    _border.w = _settings.width;
-    //}
+    /*
+    DEPRECATED
+    */
+    function _generateBorder() {
+        _border.h = _settings.height;
+        _border.w = _settings.width;
+    }
 
     function _drawPlatforms() {
         _platforms.forEach( function(platform){
@@ -540,7 +543,7 @@ var Game = (function() {
     }
 
     /**
-     * La factory posee la funcionalidad de "saber" din�micamente
+     * La factory posee la funcionalidad de "saber" dinámicamente
      * que tipo de bacteria generar.
      */
     function _ballFactory(){
@@ -597,7 +600,8 @@ var Game = (function() {
         } else {
             _player.move.dy = 0;
         }
-
+        //cacheamos la última ubicación del sprite player para volver a ellas
+        //si al moverse entra en collision con alguna plataforma
         _player.lastX = _player.x;
         _player.lastY = _player.y;
         _player.x += _player.move.dx;
