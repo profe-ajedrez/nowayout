@@ -8,7 +8,7 @@
 
 /**
  * NoWayOut
- * 
+ *
  * Autor Andrés Reyes a.k.a. Oldman Jake
  * juego de bacteria cuadrada vs bacterias redondas
  */
@@ -447,7 +447,7 @@ var Game = (function() {
                             "4xx1x2xxx1xx5x6xx2/4xx2xx4xx4xx5xx3/8888/4x56x96/4x56x96/"+
                             "4x56x96/8888/8885xxx/888xxx5/87x86xx4xx2/8888/8882xxx3/" +
                             "8888/8888/8888/8xx4xx4xx5xx3/5xxx2xxxx2x7x5x2/4xxx3xxx2xx7x8/" +
-                            "8xx4xx4xx5xx3/8888/4x56x96/4xxxx2xx3xx7x5x2/4x56x96/4x65x69/"                 
+                            "8xx4xx4xx5xx3/8888/4x56x96/4xxxx2xx3xx7x5x2/4x56x96/4x65x69/"
          },
          //TODO encapsular componentes UI
         _canvas  = document.createElement("canvas"),
