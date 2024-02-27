@@ -539,7 +539,7 @@ class Player extends RectangleActor {
         this.y = canvas.height / 2;
         this.lastX = this.x;
         this.lastY = this.y;
-        this.lives = 5;
+        this.lives = 8;
     }
 
     step(keys) {
@@ -687,11 +687,11 @@ const Game = (function(Settings, GameState) {
                   "8xxx1xxx3xxx4xx4x/" +
                   "x8xx9x4xx4x/"+
                   "32/" +
+                  "6xx24//" +
                   "32/" +
+                  "6xx24//"+
                   "32/" +
-                  "32/"+
-                  "32/" +
-                  "32/" +
+                  "6xx24//" +
                   "32/"+
                   "3x8x4xxx4xxx5/" +
                   "3x8x4xxx4xxx5/" +
@@ -889,7 +889,7 @@ const Game = (function(Settings, GameState) {
 
             _checkCollisions();
             _cicles++;
-            if (((_cicles  / 32)  % 8) === 0) {
+            if (((_cicles  / 32)  % 4) === 0) {
                 _enemies.push(_ballFactory());
             }
 
